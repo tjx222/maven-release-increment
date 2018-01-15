@@ -27,6 +27,8 @@ public class MergeReleaseDescriptor extends ReleaseDescriptor {
 
   private String startReversion;
 
+  private String endReversion;
+
   private String incrementGoals;
 
   private boolean ignoreUpdate;
@@ -50,6 +52,25 @@ public class MergeReleaseDescriptor extends ReleaseDescriptor {
    */
   public void setStartReversion(String startReversion) {
     this.startReversion = startReversion;
+  }
+
+  /**
+   * Getter method for property <tt>endReversion</tt>.
+   *
+   * @return endReversion String
+   */
+  public String getEndReversion() {
+    return endReversion;
+  }
+
+  /**
+   * Setter method for property <tt>endReversion</tt>.
+   *
+   * @param endReversion
+   *          String value to be assigned to property endReversion
+   */
+  public void setEndReversion(String endReversion) {
+    this.endReversion = endReversion;
   }
 
   /**

@@ -144,9 +144,24 @@ public class ScmLogPhase extends AbstractReleasePhase {
       processLogResult(relResult, result, reactorProjects);
     }
 
+    writeLastReleaseLog(ReleaseUtil.getRootProject(reactorProjects), releaseDescriptor);
     relResult.setResultCode(ReleaseResult.SUCCESS);
 
     return relResult;
+  }
+
+  /**
+   * @param project
+   */
+  private void writeLastReleaseLog(MavenProject project, ReleaseDescriptor releaseDescriptor) {
+    File root = project.getFile();
+    File releaseLog = new File(root.getParent(), "lastrelease.log");
+    MergeReleaseDescriptor rd = (MergeReleaseDescriptor) releaseDescriptor;
+    try {
+      FileUtils.writeStringToFile(releaseLog, rd.getStartReversion() + "/" + rd.getEndReversion());
+    } catch (IOException e) {
+      getLogger().warn("failed write last releaseLog from " + releaseLog.getAbsolutePath());
+    }
   }
 
   @Override
@@ -585,17 +600,17 @@ public class ScmLogPhase extends AbstractReleasePhase {
     cf.setOriginalName(originFile.getAbsolutePath());
   }
 
-  private Date startVersion(ScmVersion startVersion, String startVersionStr) {
+  private Date parseVersion(ScmVersion version, String versionStr) {
     Date date = null;
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     try {
-      date = df.parse(startVersionStr);
+      date = df.parse(versionStr);
     } catch (ParseException e) {
       df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
       try {
-        date = df.parse(startVersionStr);
+        date = df.parse(versionStr);
       } catch (ParseException e1) {
-        startVersion.setName(startVersionStr);
+        version.setName(versionStr);
       }
     }
     return date;
@@ -635,19 +650,27 @@ public class ScmLogPhase extends AbstractReleasePhase {
       startVersion.setName(rd.getStartReversion());
 
       ChangeLogScmRequest scmRequest = new ChangeLogScmRequest(repository, fileSet);
-      Date startDate = startVersion(startVersion, rd.getStartReversion());
+      Date startDate = parseVersion(startVersion, rd.getStartReversion());
       if (startDate != null) {
         scmRequest.setStartDate(startDate);
       } else {
         scmRequest.setStartRevision(startVersion);
-        scmRequest.setEndRevision(new AbstractScmVersion("HEAD") {
-          private static final long serialVersionUID = 6513522962534864765L;
+      }
 
-          @Override
-          public String getType() {
-            return "HEAD";
-          }
-        });
+      ScmVersion endReversion = new AbstractScmVersion("HEAD") {
+        private static final long serialVersionUID = 6513522962534864765L;
+
+        @Override
+        public String getType() {
+          return "HEAD";
+        }
+      };
+
+      Date endDate = parseVersion(endReversion, rd.getEndReversion());
+      if (endDate != null) {
+        scmRequest.setEndDate(endDate);
+      } else {
+        scmRequest.setEndRevision(endReversion);
       }
 
       if (getLogger().isDebugEnabled()) {

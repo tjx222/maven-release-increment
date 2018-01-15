@@ -3,9 +3,23 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mainbo.plugin</groupId>
   <artifactId>increment-maven-plugin</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>maven-plugin</packaging>
   <name>maven-release-increment Maven Plugin</name>
+
+  <profiles>
+		<profile>
+			<id>release</id>
+			<distributionManagement>
+				<repository>
+					<id>releases</id>
+					<name>Releases</name>
+					<url>http://192.168.0.124:8081/nexus/content/repositories/releases
+					</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,11 +43,6 @@
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
       <version>${mavenPluginPluginVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.release</groupId>
-      <artifactId>maven-release-manager</artifactId>
-      <version>2.5.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>

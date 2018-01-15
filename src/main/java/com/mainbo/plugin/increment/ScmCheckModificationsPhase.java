@@ -158,7 +158,8 @@ public class ScmCheckModificationsPhase extends AbstractReleasePhase {
       }
 
       MergeReleaseDescriptor mconfig = (MergeReleaseDescriptor) releaseDescriptor;
-      if (!mconfig.getIgnoreUpdate()) {
+      String endReversion = mconfig.getEndReversion();
+      if (!mconfig.getIgnoreUpdate() && "HEAD".equalsIgnoreCase(endReversion)) {
         UpdateScmResult upresult;
         try {
           upresult = provider.update(repository, new ScmFileSet(mp.getBasedir()));

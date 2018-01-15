@@ -45,30 +45,29 @@ public class CheckStartDatePhase extends AbstractReleasePhase {
     // get the root project
     MavenProject project = ReleaseUtil.getRootProject(reactorProjects);
 
-    String startReversion = readLastReleaseLog(project);
+    String reversionRange = readLastReleaseLog(project);
     try {
-      startReversion = prompter.prompt("What is SCM release reversion or date for start ?", startReversion);
+      reversionRange = prompter.prompt("What is SCM release reversion or date range ?", reversionRange);
     } catch (PrompterException e) {
       throw new ReleaseExecutionException("Error reading version from input handler: " + e.getMessage(), e);
     }
     MergeReleaseDescriptor rd = (MergeReleaseDescriptor) releaseDescriptor;
-    rd.setStartReversion(startReversion);
-    result.setResultCode(ReleaseResult.SUCCESS);
-    writeLastReleaseLog(project);
-    return result;
-  }
+    if (StringUtils.isNotBlank(reversionRange)) {
+      String[] range = reversionRange.split("/");
+      String endReversion = null;
+      String startReversion = null;
+      if (range.length >= 2) {
+        startReversion = range[0].trim();
+        endReversion = range[1].trim();
+      } else {
+        startReversion = reversionRange;
+      }
 
-  /**
-   * @param project
-   */
-  private void writeLastReleaseLog(MavenProject project) {
-    File root = project.getFile();
-    File releaseLog = new File(root.getParent(), "lastrelease.log");
-    try {
-      FileUtils.writeStringToFile(releaseLog, DateFormatUtils.ISO_DATE_FORMAT.format(new Date()));
-    } catch (IOException e) {
-      getLogger().warn("failed write last releaseLog from " + releaseLog.getAbsolutePath());
+      rd.setEndReversion(StringUtils.isBlank(endReversion) ? "HEAD" : endReversion);
+      rd.setStartReversion(startReversion);
     }
+    result.setResultCode(ReleaseResult.SUCCESS);
+    return result;
   }
 
   protected String readLastReleaseLog(MavenProject project) {
@@ -83,9 +82,16 @@ public class CheckStartDatePhase extends AbstractReleasePhase {
       }
     }
 
+    if (StringUtils.isNotBlank(startReversion)) {
+      String[] range = startReversion.split("/");
+      if (range.length > 1) {
+        startReversion = range[1] + "/HEAD";
+      }
+    }
+
     if (StringUtils.isBlank(startReversion)) {
       // no config, use current date as default
-      startReversion = DateFormatUtils.ISO_DATE_FORMAT.format(new Date());
+      startReversion = DateFormatUtils.ISO_DATE_FORMAT.format(new Date()) + "/HEAD";
     }
     return startReversion;
   }
