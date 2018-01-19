@@ -237,10 +237,10 @@ public class ScmLogPhase extends AbstractReleasePhase {
 
           if (filename.contains(File.separator + mp.getBasedir().getName() + File.separator)) {
             if ("war".equalsIgnoreCase(mp.getPackaging())) { // 只处理war包和当前项目匹配的变更
-              List<ChangeFile> changeFiles = projectChangeResult.get(mp.getArtifactId());
+              List<ChangeFile> changeFiles = projectChangeResult.get(mp.getBasedir().getName());
               if (changeFiles == null) {
                 changeFiles = new ArrayList<>();
-                projectChangeResult.put(mp.getArtifactId(), changeFiles);
+                projectChangeResult.put(mp.getBasedir().getName(), changeFiles);
               }
               findOrigin(cf, mp);
               changeFiles.add(cf);
@@ -669,7 +669,7 @@ public class ScmLogPhase extends AbstractReleasePhase {
       Date endDate = parseVersion(endReversion, rd.getEndReversion());
       if (endDate != null) {
         scmRequest.setEndDate(endDate);
-      } else {
+      } else if (!"HEAD".equals(endReversion.getName())) {
         scmRequest.setEndRevision(endReversion);
       }
 

@@ -85,7 +85,7 @@ public class CheckStartDatePhase extends AbstractReleasePhase {
     if (StringUtils.isNotBlank(startReversion)) {
       String[] range = startReversion.split("/");
       if (range.length > 1) {
-        startReversion = range[1] + "/HEAD";
+        startReversion = range[0] + "/HEAD";
       }
     }
 
