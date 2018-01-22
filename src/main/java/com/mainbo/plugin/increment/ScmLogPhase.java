@@ -20,6 +20,7 @@ package com.mainbo.plugin.increment;
  */
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -242,7 +243,7 @@ public class ScmLogPhase extends AbstractReleasePhase {
                 changeFiles = new ArrayList<>();
                 projectChangeResult.put(mp.getBasedir().getName(), changeFiles);
               }
-              findOrigin(cf, mp);
+              findOrigin(cf, mp, changeFiles);
               changeFiles.add(cf);
               break;
             } else if ("jar".equalsIgnoreCase(mp.getPackaging())) {
@@ -560,7 +561,7 @@ public class ScmLogPhase extends AbstractReleasePhase {
    * @param cf
    * @param parent
    */
-  private void findOrigin(ChangeFile cf, MavenProject mp) {
+  private void findOrigin(ChangeFile cf, MavenProject mp, List<ChangeFile> changeFiles) {
     String svnFileName = cf.getName().replace("\\", File.separator).replace("/", File.separator);
     String baseDir = mp.getBasedir().getName().replace("\\", File.separator).replace("/", File.separator);
     File originFile = null;
@@ -575,6 +576,23 @@ public class ScmLogPhase extends AbstractReleasePhase {
       pfileName = pfileName.replace(sourceRelativePath, "").replace(".java", ".class");
       originFile = new File(outputPath, pfileName);
       pfileName = WEBCLASSES + pfileName;
+
+      final String innerClassName = originFile.getName().replace(".class", "") + "$";
+      // find inner class
+      if (originFile.exists()) {
+        for (File innerClass : originFile.getParentFile().listFiles(new FileFilter() {
+          @Override
+          public boolean accept(File pathname) {
+            return pathname.isFile() && pathname.getName().startsWith(innerClassName);
+          }
+        })) {
+          ChangeFile innercf = new ChangeFile(new File(pfileName).getParent() + File.separator + innerClass.getName());
+          innercf.setAction(ScmFileStatus.ADDED);
+          innercf.setOriginalName(innerClass.getAbsolutePath());
+          changeFiles.add(innercf);
+        }
+      }
+
     } else {
       @SuppressWarnings("unchecked")
       List<Resource> resoursePaths = mp.getResources();
