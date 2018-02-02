@@ -243,8 +243,9 @@ public class ScmLogPhase extends AbstractReleasePhase {
                 changeFiles = new ArrayList<>();
                 projectChangeResult.put(mp.getBasedir().getName(), changeFiles);
               }
-              findOrigin(cf, mp, changeFiles);
-              changeFiles.add(cf);
+              if (findOrigin(cf, mp, changeFiles)) {
+                changeFiles.add(cf);
+              }
               break;
             } else if ("jar".equalsIgnoreCase(mp.getPackaging())) {
               String jarname = mp.getArtifactId() + "-" + mp.getVersion() + ".jar";
@@ -561,7 +562,7 @@ public class ScmLogPhase extends AbstractReleasePhase {
    * @param cf
    * @param parent
    */
-  private void findOrigin(ChangeFile cf, MavenProject mp, List<ChangeFile> changeFiles) {
+  private boolean findOrigin(ChangeFile cf, MavenProject mp, List<ChangeFile> changeFiles) {
     String svnFileName = cf.getName().replace("\\", File.separator).replace("/", File.separator);
     String baseDir = mp.getBasedir().getName().replace("\\", File.separator).replace("/", File.separator);
     File originFile = null;
@@ -609,13 +610,19 @@ public class ScmLogPhase extends AbstractReleasePhase {
     }
 
     if (originFile == null) {
-      String webSourcePath = mp.getArtifactId() + WEBROOT;// add
-                                                          // setting
-      pfileName = pfileName.replace(webSourcePath, "");
-      originFile = new File(mp.getBasedir().getParentFile(), fileName);
+      String webSourcePath = mp.getBasedir().getName() + WEBROOT;// add
+      if (pfileName.contains(webSourcePath)) {
+        // setting
+        pfileName = pfileName.replace(webSourcePath, "");
+        originFile = new File(mp.getBasedir().getParentFile(), fileName);
+      } else {
+        getLogger().info("igone not web integrant file " + fileName);
+        return false;
+      }
     }
     cf.setName(pfileName);
     cf.setOriginalName(originFile.getAbsolutePath());
+    return true;
   }
 
   private Date parseVersion(ScmVersion version, String versionStr) {
