@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
@@ -158,8 +159,12 @@ public class ScmLogPhase extends AbstractReleasePhase {
     File root = project.getFile();
     File releaseLog = new File(root.getParent(), "lastrelease.log");
     MergeReleaseDescriptor rd = (MergeReleaseDescriptor) releaseDescriptor;
+    String end = rd.getEndReversion();
+    if ("HEAD".equals(end)) {
+      end = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+    }
     try {
-      FileUtils.writeStringToFile(releaseLog, rd.getStartReversion() + "/" + rd.getEndReversion());
+      FileUtils.writeStringToFile(releaseLog, rd.getStartReversion() + "/" + end);
     } catch (IOException e) {
       getLogger().warn("failed write last releaseLog from " + releaseLog.getAbsolutePath());
     }
