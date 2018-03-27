@@ -374,7 +374,8 @@ public class ScmLogPhase extends AbstractReleasePhase {
     for (ChangeFile changeFile : changeFiles) {
       if (ScmFileStatus.MODIFIED.equals(changeFile.getAction())) { // modify
         modifyFiles.put(changeFile.getOriginalName(), changeFile.getName());
-      } else if (ScmFileStatus.ADDED.equals(changeFile.getAction())) {
+      } else if (ScmFileStatus.ADDED.equals(changeFile.getAction())
+          || ScmFileStatus.COPIED.equals(changeFile.getAction())) {
         if (delFiles.remove(changeFile.getOriginalName()) == null) {
           addFiles.put(changeFile.getOriginalName(), changeFile.getName());
         }
