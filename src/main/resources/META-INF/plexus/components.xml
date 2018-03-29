@@ -2,9 +2,9 @@
 <component-set>
   <components>
    <component>
-      <role>com.mainbo.plugin.increment.MergeManager</role>
+      <role>com.tmser.plugin.increment.MergeManager</role>
       <role-hint>default</role-hint>
-      <implementation>com.mainbo.plugin.increment.DefaultMergeManager</implementation>
+      <implementation>com.tmser.plugin.increment.DefaultMergeManager</implementation>
       <requirements>
         <requirement>
           <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
@@ -32,7 +32,7 @@
     <component>
       <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
       <role-hint>run-increment-goals</role-hint>
-      <implementation>com.mainbo.plugin.increment.RunIncrementGoalsPhase</implementation>
+      <implementation>com.tmser.plugin.increment.RunIncrementGoalsPhase</implementation>
       <isolated-realm>false</isolated-realm>
       <requirements>
         <requirement>
@@ -44,7 +44,7 @@
     <component>
       <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
       <role-hint>svn-logs</role-hint>
-      <implementation>com.mainbo.plugin.increment.ScmLogPhase</implementation>
+      <implementation>com.tmser.plugin.increment.ScmLogPhase</implementation>
       <requirements>
         <requirement>
           <role>org.apache.maven.shared.release.scm.ScmRepositoryConfigurator</role>
@@ -66,7 +66,7 @@
      <component>
       <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
       <role-hint>scm-check-modifications</role-hint>
-      <implementation>com.mainbo.plugin.increment.ScmCheckModificationsPhase</implementation>
+      <implementation>com.tmser.plugin.increment.ScmCheckModificationsPhase</implementation>
       <requirements>
         <requirement>
           <role>org.apache.maven.shared.release.scm.ScmRepositoryConfigurator</role>
@@ -94,7 +94,7 @@
     <component>
       <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
       <role-hint>check-start-reversion</role-hint>
-      <implementation>com.mainbo.plugin.increment.CheckStartDatePhase</implementation>
+      <implementation>com.tmser.plugin.increment.CheckStartDatePhase</implementation>
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.components.interactivity.Prompter</role>

@@ -1,9 +1,4 @@
-/**
- * Mainbo.com Inc.
- * Copyright (c) 2015-2017 All Rights Reserved.
- */
-
-package com.mainbo.plugin.increment;
+package com.tmser.plugin.increment;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.shared.release.config.ReleaseDescriptor;
