@@ -13,8 +13,8 @@ pom 中增加plugin 配置
 				<artifactId>increment-maven-plugin</artifactId>
 				<version>0.0.1</version>
 				<configuration>
-					<username>tanjinxiang</username>
-					<password>5yPxINDU</password>
+					<username>repo_username</username>
+					<password>repo_password</password>
 				</configuration>
     </plugin>
 	...
